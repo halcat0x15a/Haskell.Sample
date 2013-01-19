@@ -16,7 +16,7 @@ main = do
             else
                 do
                     reg  <- TIR.regex [] (T.pack . head $ args)
-                    mapM_ (\fn -> 
+                    mapM_ (\fn ->
                             withFile fn ReadMode $ \inh ->
                                 mainloop reg inh) $ drop 1 args
                     exitSuccess
