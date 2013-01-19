@@ -10,16 +10,16 @@ main :: IO ()
 main = do
     args <- getArgs
     if length args < 2
-            then do
-                hPutStrLn stderr "Usage: mygrep pattern file1 file2 ..."
-                exitWith (ExitFailure 1)
-            else
-                do
-                    reg  <- TIR.regex [] (T.pack . head $ args)
-                    mapM_ (\fn ->
-                            withFile fn ReadMode $ \inh ->
-                                mainloop reg inh) $ drop 1 args
-                    exitSuccess
+        then do
+            hPutStrLn stderr "Usage: mygrep pattern file1 file2 ..."
+            exitWith (ExitFailure 1)
+        else
+            do
+                reg  <- TIR.regex [] (T.pack . head $ args)
+                mapM_ (\fn ->
+                        withFile fn ReadMode $ \inh ->
+                            mainloop reg inh) $ drop 1 args
+                exitSuccess
 
 matchesLine:: TIR.Regex -> T.Text -> IO Bool
 matchesLine reg line =
