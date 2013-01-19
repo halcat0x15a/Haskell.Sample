@@ -37,3 +37,12 @@ mainloop reg inh =
                         b <- matchesLine reg line
                         when b (TIO.putStrLn line)
                         mainloop reg inh)
+-- import control.monad (unless, filterM)
+-- mainloop reg inh =
+--     do
+--         ineof <- hIsEOF inh
+--         unless ineof (do
+--                         ls <- TIO.hGetContents inh
+--                         matchLines <- filterM (matchesLine reg) (T.lines ls)
+--                         mapM_ TIO.putStrLn  matchLines
+--                         mainloop reg inh)
