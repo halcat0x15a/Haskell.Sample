@@ -21,8 +21,8 @@ main = do
                                 mainloop reg inh) $ drop 1 args
                     exitSuccess
 
-matchLine:: TIR.Regex -> T.Text -> IO Bool
-matchLine reg line =
+matchesLine:: TIR.Regex -> T.Text -> IO Bool
+matchesLine reg line =
     do
         TIR.setText reg line
         TIR.find reg 0
@@ -34,6 +34,6 @@ mainloop reg inh =
         ineof <- hIsEOF inh
         unless ineof (do
                         line <- TIO.hGetLine inh
-                        b <- matchLine reg line
+                        b <- matchesLine reg line
                         when b (TIO.putStrLn line)
                         mainloop reg inh)
