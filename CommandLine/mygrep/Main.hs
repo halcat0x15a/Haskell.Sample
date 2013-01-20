@@ -1,7 +1,6 @@
 import System.Environment
 import System.IO
 import System.Exit
--- import Control.Monad (filterM)
 import Control.Monad (unless, when)
 import qualified Data.Text as T
 import qualified Data.Text.ICU.Regex as TIR
@@ -16,8 +15,6 @@ main = do
             exitWith (ExitFailure 1)
         else
             do
-                hSetBuffering stdin NoBuffering
-                hSetBuffering stdout NoBuffering
                 reg  <- TIR.regex [] (T.pack . head $ args)
                 if length args == 1
                     then doesGrepLinesFromHandle reg stdin
@@ -32,14 +29,6 @@ matchesLine reg line =
     do
         TIR.setText reg line
         TIR.find reg 0
-
-
--- doesGrepLinesFromHandle:: TIR.Regex -> Handle -> IO ()
--- doesGrepLinesFromHandle reg inh =
---     do
---         contents <- TIO.hGetContents inh
---         filtered <- filterM (matchesLine reg) $ T.lines contents
---         mapM_ TIO.putStrLn filtered
 
 doesGrepLinesFromHandle:: TIR.Regex -> Handle -> IO ()
 doesGrepLinesFromHandle reg inh =
