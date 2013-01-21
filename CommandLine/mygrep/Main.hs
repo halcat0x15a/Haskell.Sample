@@ -1,10 +1,10 @@
 import System.Environment
 import System.IO
 import System.Exit
-import Control.Monad (unless, when)
-import qualified Data.Text as T
-import qualified Data.Text.ICU.Regex as TIR
-import qualified Data.Text.IO as TIO
+import qualified Data.Text.Lazy as TL
+import qualified Data.Text.Lazy.IO as TILO
+import Text.Regex
+import Data.Maybe
 
 main :: IO ()
 main = do
@@ -15,27 +15,17 @@ main = do
             exitWith (ExitFailure 1)
         else
             do
-                reg  <- TIR.regex [] (T.pack . head $ args)
-                if length args == 1
-                    then doesGrepLinesFromHandle reg stdin
-                    else
-                        mapM_ (\fn ->
+                let reg = mkRegex . head $ args in
+                    if length args == 1
+                        then grepLinesFromHandle reg stdin
+                        else
+                            mapM_ (\fn ->
                                 withFile fn ReadMode $ \inh ->
-                                    doesGrepLinesFromHandle reg inh) $ drop 1 args
+                                    grepLinesFromHandle reg inh) $ drop 1 args
                 exitSuccess
 
-matchesLine:: TIR.Regex -> T.Text -> IO Bool
-matchesLine reg line =
+grepLinesFromHandle:: Regex -> Handle -> IO ()
+grepLinesFromHandle reg inh =
     do
-        TIR.setText reg line
-        TIR.find reg 0
-
-doesGrepLinesFromHandle:: TIR.Regex -> Handle -> IO ()
-doesGrepLinesFromHandle reg inh =
-        do
-        ineof <- hIsEOF inh
-        unless ineof (do
-                        line <- TIO.hGetLine inh
-                        b <- matchesLine reg $! line
-                        when b (TIO.putStrLn line)
-                        doesGrepLinesFromHandle reg inh)
+        contents <- TILO.hGetContents inh
+        mapM_ TILO.putStrLn $ filter (isJust . matchRegex reg . TL.unpack) $ TL.lines contents
