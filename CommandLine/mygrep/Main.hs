@@ -1,8 +1,6 @@
 import System.Environment
 import System.IO
 import System.Exit
-import qualified Data.Text.Lazy as TL
-import qualified Data.Text.Lazy.IO as TILO
 import Text.Regex.TDFA
 
 main :: IO ()
@@ -26,5 +24,5 @@ main = do
 grepLinesFromHandle:: String -> Handle -> IO ()
 grepLinesFromHandle reg inh =
     do
-        contents <- TILO.hGetContents inh
-        mapM_ TILO.putStrLn $ filter (\line -> TL.unpack line =~ reg :: Bool) $ TL.lines contents
+        contents <- hGetContents inh
+        mapM_ putStrLn $ filter (\line -> line =~ reg :: Bool) $ lines contents
