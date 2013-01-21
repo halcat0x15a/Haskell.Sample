@@ -3,8 +3,7 @@ import System.IO
 import System.Exit
 import qualified Data.Text.Lazy as TL
 import qualified Data.Text.Lazy.IO as TILO
-import Text.Regex
-import Data.Maybe
+import Text.Regex.TDFA
 
 main :: IO ()
 main = do
@@ -15,7 +14,7 @@ main = do
             exitWith (ExitFailure 1)
         else
             do
-                let reg = mkRegex . head $ args in
+                let reg = head args in
                     if length args == 1
                         then grepLinesFromHandle reg stdin
                         else
@@ -24,8 +23,8 @@ main = do
                                     grepLinesFromHandle reg inh) $ drop 1 args
                 exitSuccess
 
-grepLinesFromHandle:: Regex -> Handle -> IO ()
+grepLinesFromHandle:: String -> Handle -> IO ()
 grepLinesFromHandle reg inh =
     do
         contents <- TILO.hGetContents inh
-        mapM_ TILO.putStrLn $ filter (isJust . matchRegex reg . TL.unpack) $ TL.lines contents
+        mapM_ TILO.putStrLn $ filter (\line -> TL.unpack line =~ reg :: Bool) $ TL.lines contents
