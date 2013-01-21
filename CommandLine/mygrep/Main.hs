@@ -17,8 +17,7 @@ main = do
                         then grepLinesFromHandle reg stdin
                         else
                             mapM_ (\fn ->
-                                withFile fn ReadMode $ \inh ->
-                                    grepLinesFromHandle reg inh) $ drop 1 args
+                                withFile fn ReadMode $ grepLinesFromHandle reg) $ drop 1 args
                 exitSuccess
 
 grepLinesFromHandle:: String -> Handle -> IO ()
